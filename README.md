@@ -135,6 +135,174 @@ root@e8225f:~#
 root@e8225f:~# kubelet --version
 Kubernetes v1.13.3
 root@e8225f:~#
+
+
+Initialize Cluster with Kubeadm
+=================================
+
+ubuntu@e8225f:~$ sudo su -
+	root@e8225f:~#
+	root@e8225f:~#
+	root@e8225f:~# kubeadm init --apiserver-advertise-address 10.196.47.110
+	[init] Using Kubernetes version: v1.13.3
+	[preflight] Running pre-flight checks
+	[preflight] Pulling images required for setting up a Kubernetes cluster
+	[preflight] This might take a minute or two, depending on the speed of your internet connection
+	[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'
+	[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+	[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+	[kubelet-start] Activating the kubelet service
+	[certs] Using certificateDir folder "/etc/kubernetes/pki"
+	[certs] Generating "ca" certificate and key
+	[certs] Generating "apiserver-kubelet-client" certificate and key
+	[certs] Generating "apiserver" certificate and key
+	[certs] apiserver serving cert is signed for DNS names [e8225f kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 10.196.47.110]
+	[certs] Generating "front-proxy-ca" certificate and key
+	[certs] Generating "front-proxy-client" certificate and key
+	[certs] Generating "etcd/ca" certificate and key
+	[certs] Generating "etcd/peer" certificate and key
+	[certs] etcd/peer serving cert is signed for DNS names [e8225f localhost] and IPs [10.196.47.110 127.0.0.1 ::1]
+	[certs] Generating "etcd/healthcheck-client" certificate and key
+	[certs] Generating "etcd/server" certificate and key
+	[certs] etcd/server serving cert is signed for DNS names [e8225f localhost] and IPs [10.196.47.110 127.0.0.1 ::1]
+	[certs] Generating "apiserver-etcd-client" certificate and key
+	[certs] Generating "sa" key and public key
+	[kubeconfig] Using kubeconfig folder "/etc/kubernetes"
+	[kubeconfig] Writing "admin.conf" kubeconfig file
+	[kubeconfig] Writing "kubelet.conf" kubeconfig file
+	[kubeconfig] Writing "controller-manager.conf" kubeconfig file
+	[kubeconfig] Writing "scheduler.conf" kubeconfig file
+	[control-plane] Using manifest folder "/etc/kubernetes/manifests"
+	[control-plane] Creating static Pod manifest for "kube-apiserver"
+	[control-plane] Creating static Pod manifest for "kube-controller-manager"
+	[control-plane] Creating static Pod manifest for "kube-scheduler"
+	[etcd] Creating static Pod manifest for local etcd in "/etc/kubernetes/manifests"
+	[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+	[apiclient] All control plane components are healthy after 22.002254 seconds
+	[uploadconfig] storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+	[kubelet] Creating a ConfigMap "kubelet-config-1.13" in namespace kube-system with the configuration for the kubelets in the cluster
+	[patchnode] Uploading the CRI Socket information "/var/run/dockershim.sock" to the Node API object "e8225f" as an annotation
+	[mark-control-plane] Marking the node e8225f as control-plane by adding the label "node-role.kubernetes.io/master=''"
+	[mark-control-plane] Marking the node e8225f as control-plane by adding the taints [node-role.kubernetes.io/master:NoSchedule]
+	[bootstrap-token] Using token: 5ieym7.0br74gn02nnwnslz
+	[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+	[bootstraptoken] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+	[bootstraptoken] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+	[bootstraptoken] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+	[bootstraptoken] creating the "cluster-info" ConfigMap in the "kube-public" namespace
+	[addons] Applied essential addon: CoreDNS
+	[addons] Applied essential addon: kube-proxy
+	
+	Your Kubernetes master has initialized successfully!
+	
+	To start using your cluster, you need to run the following as a regular user:
+	
+	  mkdir -p $HOME/.kube
+	  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+	
+	You should now deploy a pod network to the cluster.
+	Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+	  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+	
+	You can now join any number of machines by running the following on each node
+	as root:
+	
+	  kubeadm join 10.196.47.110:6443 --token 5ieym7.0br74gn02nnwnslz --discovery-token-ca-cert-hash sha256:ca103b5d852c581700d08a09d94a73a64d24e70f84441abd4c6fb041901536e7
+	
+root@e8225f:~#
+
+
+Configure cluster environment for the root user 
+==============================================
+	
+	root@e8225f:~# kubectl get nodes
+	The connection to the server localhost:8080 was refused - did you specify the right host or port?
+	root@e8225f:~#
+	root@e8225f:~#   mkdir -p $HOME/.kube
+	root@e8225f:~#   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	root@e8225f:~#   sudo chown $(id -u):$(id -g) $HOME/.kube/config
+	root@e8225f:~#
+	root@e8225f:~# kubectl get nodes
+	NAME     STATUS     ROLES    AGE   VERSION
+	e8225f   NotReady   master   33m   v1.13.3
+	root@e8225f:~#
+	root@e8225f:~#
+
+Joining nodes to K8s cluster
+==============================
+
+	root@ff302a:~# kubeadm join 10.196.47.110:6443 --token 5ieym7.0br74gn02nnwnslz --discovery-token-ca-cert-hash sha256:ca103b5d852c581700d08a09d94a73a64d24e70f84441abd4c6fb041901536e7
+	[preflight] Running pre-flight checks
+	[discovery] Trying to connect to API Server "10.196.47.110:6443"
+	[discovery] Created cluster-info discovery client, requesting info from "https://10.196.47.110:6443"
+	[discovery] Requesting info from "https://10.196.47.110:6443" again to validate TLS against the pinned public key
+	[discovery] Cluster info signature and contents are valid and TLS certificate validates against pinned roots, will use API Server "10.196.47.110:6443"
+	[discovery] Successfully established connection with API Server "10.196.47.110:6443"
+	[join] Reading configuration from the cluster...
+	[join] FYI: You can look at this config file with 'kubectl -n kube-system get cm kubeadm-config -oyaml'
+	[kubelet] Downloading configuration for the kubelet from the "kubelet-config-1.13" ConfigMap in the kube-system namespace
+	[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+	[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+	[kubelet-start] Activating the kubelet service
+	[tlsbootstrap] Waiting for the kubelet to perform the TLS Bootstrap...
+	[patchnode] Uploading the CRI Socket information "/var/run/dockershim.sock" to the Node API object "ff302a" as an annotation
+	
+	This node has joined the cluster:
+	* Certificate signing request was sent to apiserver and a response was received.
+	* The Kubelet was informed of the new secure connection details.
+	
+	Run 'kubectl get nodes' on the master to see this node join the cluster.
+	
+	root@ff302a:~#
+	
+	
+  List K8s cluster and node details 
+  ====================================
+	
+	root@e8225f:~# kubectl get nodes -o wide
+	NAME     STATUS     ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+	d1079f   NotReady   <none>   14m   v1.13.3   10.196.41.162   <none>        Ubuntu 16.04.5 LTS   4.4.0-142-generic   docker://18.6.1
+	e8225f   NotReady   master   50m   v1.13.3   10.196.47.110   <none>        Ubuntu 16.04.4 LTS   4.4.0-128-generic   docker://18.6.1
+	ff302a   NotReady   <none>   13m   v1.13.3   10.196.41.58    <none>        Ubuntu 16.04.5 LTS   4.4.0-142-generic   docker://18.6.1
+	root@e8225f:~#
+  
+	Copy the below file from master node to all other nodes 
+	========================================================
+  /etc/kubernetes/admin.conf  to all other nodes at location $HOME/.kube/config 
+	
+  Setting up Weave CNI - Container Network Interface
+  ==================================================
+		root@e8225f:~# kubectl get pods
+		No resources found.
+		root@e8225f:~#
+		root@e8225f:~#
+		root@e8225f:~# kubectl cluster-info
+		Kubernetes master is running at https://10.196.47.110:6443
+		KubeDNS is running at https://10.196.47.110:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+		To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+		root@e8225f:~#
+		root@e8225f:~#
+		
+		root@ff302a:~# export kubever=$(kubectl version | base64 | tr -d '\n')
+		root@ff302a:~# kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+		serviceaccount/weave-net created
+		clusterrole.rbac.authorization.k8s.io/weave-net created
+		clusterrolebinding.rbac.authorization.k8s.io/weave-net created
+		role.rbac.authorization.k8s.io/weave-net created
+		rolebinding.rbac.authorization.k8s.io/weave-net created
+		daemonset.extensions/weave-net created
+		root@ff302a:~# kubectl get pods
+		No resources found.
+		root@ff302a:~#
+		root@ff302a:~#
+		
+		Every 1.0s: kubectl get nodes,pods -o wide                                                                                        Wed Feb 13 15:19:10 2019
+		
+		NAME          STATUS   ROLES    AGE    VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+		node/d1079f   Ready    <none>   69m    v1.13.3   10.196.41.162   <none>        Ubuntu 16.04.5 LTS   4.4.0-142-generic   docker://18.6.1
+		node/e8225f   Ready    master   106m   v1.13.3   10.196.47.110   <none>        Ubuntu 16.04.4 LTS   4.4.0-128-generic   docker://18.6.1
+		node/ff302a   Ready    <none>   68m    v1.13.3   10.196.41.58    <none>        Ubuntu 16.04.5 LTS   4.4.0-142-generic   docker://18.6.1
 ```
   
   
