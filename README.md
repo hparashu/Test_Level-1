@@ -386,6 +386,105 @@ root@e165a7:~/mstackx#
 4. Install guest-book application on both namespaces.
 
 ```
+Clone the source code 
+=========================
+root@e165a7:~/mstackx# git clone https://github.com/kubernetes/examples.git
+Cloning into 'examples'...
+remote: Enumerating objects: 6, done.
+remote: Counting objects: 100% (6/6), done.
+remote: Compressing objects: 100% (6/6), done.
+remote: Total 11619 (delta 0), reused 3 (delta 0), pack-reused 11613
+Receiving objects: 100% (11619/11619), 16.78 MiB | 0 bytes/s, done.
+Resolving deltas: 100% (6371/6371), done.
+Checking connectivity... done.
+root@e165a7:~/mstackx#
+root@e165a7:~/mstackx# cd examples/guestbook
+root@e165a7:~/mstackx/examples/guestbook# ls
+all-in-one                legacy          README.md                     redis-slave
+frontend-deployment.yaml  MAINTENANCE.md  redis-master-deployment.yaml  redis-slave-deployment.yaml
+frontend-service.yaml     php-redis       redis-master-service.yaml     redis-slave-service.yaml
+root@e165a7:~/mstackx/examples/guestbook#
+
+
+Creating Redis Master and Master-Service 
+=========================================
+root@e165a7:~/mstackx/examples/guestbook# kubectl -n staging apply -f redis-master-deployment.yaml -f redis-master-service.yaml --dry-run
+deployment.apps/redis-master created (dry run)
+service/redis-master created (dry run)
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl -n staging apply -f redis-master-deployment.yaml -f redis-master-service.yaml
+deployment.apps/redis-master created
+service/redis-master created
+root@e165a7:~/mstackx/examples/guestbook# kubectl get pods -n staging
+NAME                            READY   STATUS    RESTARTS   AGE
+redis-master-6fbbc44567-bxg5d   1/1     Running   0          9s
+root@e165a7:~/mstackx/examples/guestbook#
+
+
+
+Creating Redis Slaves and Slave-Service
+========================================
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply  -f redis-slave-deployment.yaml -f redis-slave-service.yaml -n staging --dry-run
+deployment.apps/redis-slave created (dry run)
+service/redis-slave created (dry run)
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply  -f redis-slave-deployment.yaml -f redis-slave-service.yaml -n staging
+deployment.apps/redis-slave created
+service/redis-slave created
+root@e165a7:~/mstackx/examples/guestbook#
+
+
+
+Creating the Guestbook Frontend Deployment
+==========================================
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply  -f frontend-deployment.yaml -f frontend-service.yaml -n staging --dry-run
+deployment.apps/frontend created (dry run)
+service/frontend created (dry run)
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply  -f frontend-deployment.yaml -f frontend-service.yaml -n staging
+deployment.apps/frontend created
+service/frontend created
+root@e165a7:~/mstackx/examples/guestbook#
+
+
+Guest-book app in staging and production
+===========================================
+root@e165a7:~/mstackx/examples/guestbook# kubectl get pods,service -n staging
+NAME                                READY   STATUS    RESTARTS   AGE
+pod/frontend-74b4665db5-9hl8r       1/1     Running   0          4s
+pod/frontend-74b4665db5-d29sg       1/1     Running   0          4s
+pod/frontend-74b4665db5-hskwh       1/1     Running   0          4s
+pod/redis-master-6fbbc44567-bxg5d   1/1     Running   0          2m10s
+pod/redis-slave-74ccb764fc-69q75    1/1     Running   0          80s
+pod/redis-slave-74ccb764fc-b282b    1/1     Running   0          80s
+
+NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/frontend       NodePort    10.106.9.69      <none>        80:31177/TCP   4s
+service/redis-master   ClusterIP   10.108.137.215   <none>        6379/TCP       2m10s
+service/redis-slave    ClusterIP   10.103.167.153   <none>        6379/TCP       80s
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook#
+
+
+root@e165a7:~/mstackx/examples/guestbook# kubectl get pods,service -n production
+NAME                                READY   STATUS    RESTARTS   AGE
+pod/frontend-74b4665db5-9jfj7       1/1     Running   0          16s
+pod/frontend-74b4665db5-c76l5       1/1     Running   0          16s
+pod/frontend-74b4665db5-hmzk8       1/1     Running   0          16s
+pod/redis-master-6fbbc44567-2gbjp   1/1     Running   0          44s
+pod/redis-slave-74ccb764fc-7g842    1/1     Running   0          27s
+pod/redis-slave-74ccb764fc-kb4r5    1/1     Running   0          27s
+
+NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/frontend       NodePort    10.105.215.142   <none>        80:30455/TCP   16s
+service/redis-master   ClusterIP   10.100.128.208   <none>        6379/TCP       44s
+service/redis-slave    ClusterIP   10.96.172.116    <none>        6379/TCP       27s
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook#
+
+
+
+
 
 ```
 
