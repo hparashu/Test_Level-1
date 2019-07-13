@@ -548,8 +548,42 @@ ingress-nginx   guestbook.mstakx.io   160.34.9.244   80      60s
 root@e165a7:~/mstackx/examples/guestbook#
 ```
 
-
-
+7. Implement a pod autoscaler on both namespaces which will scale frontend pod replicas up and down based on CPU utilization of pods. 
+```
+root@e165a7:~/mstackx/examples/guestbook# cat staging-autoscale.yaml
+apiVersion: v1
+items:
+- apiVersion: autoscaling/v1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: frontend
+    namespace: staging
+  spec:
+    maxReplicas: 6
+    minReplicas: 3
+    scaleTargetRef:
+      apiVersion: extensions/v1beta1
+      kind: Deployment
+      name: frontend
+    targetCPUUtilizationPercentage: 50
+  status:
+    currentCPUUtilizationPercentage: 1
+    currentReplicas: 3
+    desiredReplicas: 3
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply -f staging-autoscale.yaml
+horizontalpodautoscaler.autoscaling/frontend created
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl get hpa -n staging
+NAME       REFERENCE             TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+frontend   Deployment/frontend   1%/50%    3         6         3          15s
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook#
+```
 
 
 
