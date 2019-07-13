@@ -4,7 +4,7 @@ DevOps/SysOps role – Level#1
 Tasks:
 1.	Create a Kubernetes cluster on GCP (GCP gives free credits on signup so those should suffice for this exercise). If possible share a script / code which can be used to create the cluster.
 
-  Since I'm an employee of Oracle and familiar with Oracle Cloud, I have created this K8s cluster on Oracle Cloud for learning purpose and share the steps I followed sometime back; 
+  Since I'm an employee of Oracle and familiar with Oracle Cloud, I have created this K8s cluster on Oracle Cloud for learning purpose and sharing the steps I followed sometime back; 
   
 ```
 root@e8225f:~# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -310,5 +310,98 @@ Joining nodes to K8s cluster
 2.	Install nginx ingress controller on the cluster. For now, we consider that the user will add public IP of ingress LoadBalancer to their /etc/hosts file for all hostnames to be used. So do not worry about DNS resolution.
 
 ```
-Test 1 
+Creating the Service Account, and the Ingress Controller
+========================================================
+root@e165a7:~/mstackx/ingress#  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
+namespace/ingress-nginx created
+configmap/nginx-configuration created
+configmap/tcp-services created
+configmap/udp-services created
+serviceaccount/nginx-ingress-serviceaccount created
+clusterrole.rbac.authorization.k8s.io/nginx-ingress-clusterrole created
+role.rbac.authorization.k8s.io/nginx-ingress-role created
+rolebinding.rbac.authorization.k8s.io/nginx-ingress-role-nisa-binding created
+clusterrolebinding.rbac.authorization.k8s.io/nginx-ingress-clusterrole-nisa-binding created
+deployment.apps/nginx-ingress-controller created
+root@e165a7:~/mstackx/ingress#
+root@e165a7:~/mstackx/ingress#
+
+ Create ingress controller service as a load balancer service:
+ ============================================================
+root@e165a7:~/mstackx/ingress# cat cloud-generic.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: ingress-nginx
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+    - name: https
+      port: 443
+      targetPort: https
+
+root@e165a7:~/mstackx/ingress#
+root@e165a7:~/mstackx/ingress# kubectl apply -f cloud-generic.yaml --dry-run
+service/ingress-nginx created (dry run)
+root@e165a7:~/mstackx/ingress#
+root@e165a7:~/mstackx/ingress# kubectl apply -f cloud-generic.yaml
+service/ingress-nginx created
+root@e165a7:~/mstackx/ingress#
+root@e165a7:~/mstackx/ingress# kubectl get svc -n ingress-nginx
+NAME            TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx   LoadBalancer   10.109.187.194   <pending>     80:30623/TCP,443:31400/TCP   21s
+root@e165a7:~/mstackx/ingress#
+root@e165a7:~/mstackx/ingress#
 ```
+
+3. On this cluster, create namespaces called staging and production. 
+
+```
+root@e165a7:~/mstackx# kubectl get ns --show-labels | egrep 'stag|pro'
+production      Active   74s    app=ingress-nginx,environment=production
+staging         Active   33s    app=ingress-nginx,environment=staging
+root@e165a7:~/mstackx#
+root@e165a7:~/mstackx#
+root@e165a7:~/mstackx# cat namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+  labels:
+    environment: staging
+    app: ingress-nginx
+root@e165a7:~/mstackx#
+```
+
+4. Install guest-book application on both namespaces.
+
+```
+
+```
+
+```
+```
+
+```
+```
+
+
+
+
+
+
+
+
+
+
+
