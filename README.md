@@ -585,7 +585,9 @@ root@e165a7:~/mstackx/examples/guestbook#
 root@e165a7:~/mstackx/examples/guestbook#
 ```
 
-
+8. Write a script which will demonstrate how the pods are scaling up and down by increasing/decreasing load on existing pods.
+```
+```
 
 
 
