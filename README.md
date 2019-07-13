@@ -481,17 +481,71 @@ service/redis-master   ClusterIP   10.100.128.208   <none>        6379/TCP      
 service/redis-slave    ClusterIP   10.96.172.116    <none>        6379/TCP       27s
 root@e165a7:~/mstackx/examples/guestbook#
 root@e165a7:~/mstackx/examples/guestbook#
-
-
-
-
-
 ```
 
+
+5. Expose staging application on hostname staging-guestbook.mstakx.io
 ```
+root@e165a7:~/mstackx/examples/guestbook# cat staging-frontend-ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-nginx
+  namespace: staging
+spec:
+  rules:
+  - host: staging-guestbook.mstakx.io
+    http:
+      paths:
+      - backend:
+          serviceName: frontend
+          servicePort: 80
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply -f staging-frontend-ingress.yaml -f production-frontend-ingress.yaml --dry-run
+ingress.extensions/ingress-nginx configured (dry run)
+ingress.extensions/ingress-nginx created (dry run)
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply -f staging-frontend-ingress.yaml -f production-frontend-ingress.yaml
+ingress.extensions/ingress-nginx unchanged
+ingress.extensions/ingress-nginx created
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl get Ingress -n staging
+NAME            HOSTS                         ADDRESS        PORTS   AGE
+ingress-nginx   staging-guestbook.mstakx.io   160.34.9.244   80      105m
+root@e165a7:~/mstackx/examples/guestbook#
 ```
 
+6. Expose production application on hostname guestbook.mstakx.io
 ```
+
+root@e165a7:~/mstackx/examples/guestbook# cat production-frontend-ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-nginx
+  namespace: production
+spec:
+  rules:
+  - host: guestbook.mstakx.io
+    http:
+      paths:
+      - backend:
+          serviceName: frontend
+          servicePort: 80
+
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply -f staging-frontend-ingress.yaml -f production-frontend-ingress.yaml --dry-run
+ingress.extensions/ingress-nginx configured (dry run)
+ingress.extensions/ingress-nginx created (dry run)
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl apply -f staging-frontend-ingress.yaml -f production-frontend-ingress.yaml
+ingress.extensions/ingress-nginx unchanged
+ingress.extensions/ingress-nginx created
+root@e165a7:~/mstackx/examples/guestbook#
+root@e165a7:~/mstackx/examples/guestbook# kubectl get Ingress -n production
+NAME            HOSTS                 ADDRESS        PORTS   AGE
+ingress-nginx   guestbook.mstakx.io   160.34.9.244   80      60s
+root@e165a7:~/mstackx/examples/guestbook#
 ```
 
 
