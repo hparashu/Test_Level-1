@@ -1,22 +1,20 @@
 # Test_Level-1
 DevOps/SysOps role – Level#1
 
-
-Q. What was the node size chosen for the Kubernetes nodes? And why?
-
+Q1. What was the node size chosen for the Kubernetes nodes? And why?
 Ans. I have created 3 node cluster for testing and learning purpose. Reason behind 3 node is because of restrictions in my free account and nothing else. 
 
-Q. What method was chosen to install the demo application and ingress controller on the cluster, justify the method used?
-
+Q2. What method was chosen to install the demo application and ingress controller on the cluster, justify the method used?
 Ans. I used kubectl tool to install all apps. Helm package manager is one more option but I havent explored it yet. 
 
-Q. What would be your chosen solution to monitor the application on the cluster and why?
-
+Q3. What would be your chosen solution to monitor the application on the cluster and why?
 Ans. I keep hearing about Prometheus in kubernetes meetup sessions which I attend, yet to explore it. 
 
-Q. What additional components / plugins would you install on the cluster to manage it better? 
-
+Q4. What additional components / plugins would you install on the cluster to manage it better? 
 Ans. In my learning I have come across Weave Net, metrics-server, dashboard and visualizer and looking for more 
+
+
+
 
 
 
