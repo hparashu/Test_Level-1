@@ -8,7 +8,6 @@ Ans. I have created 3 node cluster for testing and learning purpose. Reason behi
 Q. What method was chosen to install the demo application and ingress controller on the cluster, justify the method used
 Ans. I used kubectl tool to install all apps. Helm package manager is one more option but I havent explored it yet. 
 
-
 Q. What would be your chosen solution to monitor the application on the cluster and why?
 Ans. I keep hearing about Prometheus in kubernetes meetup sessions which I attend, yet to explore it. 
 
