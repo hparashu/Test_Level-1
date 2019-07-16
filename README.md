@@ -1,6 +1,16 @@
 # Test_Level-1
 DevOps/SysOps role – Level#1
 
+
+• What was the node size chosen for the Kubernetes nodes? And why?
+  [PH] I have created 3 node cluster for testing and learning purpose. Reason behind 3 node is because of restrictions in my free account and nothing else. 
+• What method was chosen to install the demo application and ingress controller on the cluster, justify the method used
+• What would be your chosen solution to monitor the application on the cluster and why?
+• What additional components / plugins would you install on the cluster to manage it better? 
+
+
+
+
 Tasks:
 1.	Create a Kubernetes cluster on GCP (GCP gives free credits on signup so those should suffice for this exercise). If possible share a script / code which can be used to create the cluster.
 
@@ -587,8 +597,39 @@ root@e165a7:~/mstackx/examples/guestbook#
 
 8. Write a script which will demonstrate how the pods are scaling up and down by increasing/decreasing load on existing pods.
 ```
-```
+#!/bin/bash
 
+# Stess CPU of the container and HPA will autoscale the PODs
+echo -e "==== CPU and Memory Utilization & List of PODs ==== \n"
+kubectl top pods -n staging | grep frontend; echo -e "\n"
+kubectl get hpa -n staging; echo -e "\n"
+podname=$(kubectl -n staging get pods | grep frontend | awk '{print $1;exit}')
+
+# Injecting CPU load in one of the container
+echo -e "Injecting CPU load in POD container $podname …..\n"
+kubectl -n staging exec $podname --  bash -c "yes > /dev/null 2> /dev/null &"
+
+# Waiting for 5mins after injecting CPU load and then check the CPU load and check if PODs have been autoscaled or not
+echo -e "Sleeping for 5mins…..\n"; sleep 5m
+echo -e "==== CPU and Memory Utilization & List of PODs ==== \n"
+kubectl top pods -n staging | grep frontend; echo -e "\n"
+kubectl get hpa -n staging; echo -e "\n"
+
+# Stopping CPU load 
+echo -e "Stopping CPU load in POD container $podname …..\n"
+kubectl -n staging exec $podname --  bash -c "killall yes"
+
+# Waiting for 5mins after stopping CPU load and then check CPU load has been decreased and PODs have been scaled down 
+echo -e "Sleeping for 5mins…..\n"; sleep 5m
+echo -e "==== CPU and Memory Utilization & List of PODs ==== \n"
+kubectl top pods -n staging | grep frontend; echo -e "\n"
+
+kubectl get hpa -n staging; 
+```
+9. Write a wrapper script which does all the steps above. Mention any pre-requisites in the README.md at the root of your repo.
+```
+k8s_setup.sh script has been added to this repository 
+```
 
 
 
