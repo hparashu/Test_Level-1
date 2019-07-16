@@ -1,0 +1,16 @@
+root@e165a7:~/mstackx/examples/guestbook# cat production-frontend-ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-nginx
+  namespace: production
+spec:
+  rules:
+  - host: guestbook.mstakx.io
+    http:
+      paths:
+      - backend:
+          serviceName: frontend
+          servicePort: 80
+
+root@e165a7:~/mstackx/examples/guestbook#
