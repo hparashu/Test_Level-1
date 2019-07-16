@@ -331,6 +331,7 @@ Joining nodes to K8s cluster
   
   
 
+
 2.	Install nginx ingress controller on the cluster. For now, we consider that the user will add public IP of ingress LoadBalancer to their /etc/hosts file for all hostnames to be used. So do not worry about DNS resolution.
 
 ```
@@ -388,6 +389,8 @@ root@e165a7:~/mstackx/ingress#
 root@e165a7:~/mstackx/ingress#
 ```
 
+
+
 3. On this cluster, create namespaces called staging and production. 
 
 ```
@@ -406,6 +409,8 @@ metadata:
     app: ingress-nginx
 root@e165a7:~/mstackx#
 ```
+
+
 
 4. Install guest-book application on both namespaces.
 
@@ -508,6 +513,8 @@ root@e165a7:~/mstackx/examples/guestbook#
 ```
 
 
+
+
 5. Expose staging application on hostname staging-guestbook.mstakx.io
 ```
 root@e165a7:~/mstackx/examples/guestbook# cat staging-frontend-ingress.yaml
@@ -538,6 +545,8 @@ NAME            HOSTS                         ADDRESS        PORTS   AGE
 ingress-nginx   staging-guestbook.mstakx.io   160.34.9.244   80      105m
 root@e165a7:~/mstackx/examples/guestbook#
 ```
+
+
 
 6. Expose production application on hostname guestbook.mstakx.io
 ```
@@ -571,6 +580,8 @@ NAME            HOSTS                 ADDRESS        PORTS   AGE
 ingress-nginx   guestbook.mstakx.io   160.34.9.244   80      60s
 root@e165a7:~/mstackx/examples/guestbook#
 ```
+
+
 
 7. Implement a pod autoscaler on both namespaces which will scale frontend pod replicas up and down based on CPU utilization of pods. 
 ```
@@ -609,6 +620,8 @@ root@e165a7:~/mstackx/examples/guestbook#
 root@e165a7:~/mstackx/examples/guestbook#
 ```
 
+
+
 8. Write a script which will demonstrate how the pods are scaling up and down by increasing/decreasing load on existing pods.
 ```
 #!/bin/bash
@@ -640,6 +653,9 @@ kubectl top pods -n staging | grep frontend; echo -e "\n"
 
 kubectl get hpa -n staging; 
 ```
+
+
+
 9. Write a wrapper script which does all the steps above. Mention any pre-requisites in the README.md at the root of your repo.
 ```
 k8s_setup.sh script has been added to this repository 
