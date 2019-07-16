@@ -5,9 +5,11 @@ DevOps/SysOps role – Level#1
 • What was the node size chosen for the Kubernetes nodes? And why?
   [PH] I have created 3 node cluster for testing and learning purpose. Reason behind 3 node is because of restrictions in my free account and nothing else. 
 • What method was chosen to install the demo application and ingress controller on the cluster, justify the method used
+  [PH] I used kubectl tool to install all apps. Helm package manager is one more option but I havent explored it yet. 
 • What would be your chosen solution to monitor the application on the cluster and why?
+  [PH] I keep hearing about Prometheus in kubernetes meetup sessions which I attend, yet to explore it. 
 • What additional components / plugins would you install on the cluster to manage it better? 
-
+  [PH] In my learning I have come across Weave Net, metrics-server, dashboard and visualizer and looking for more 
 
 
 
